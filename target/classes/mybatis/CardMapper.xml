@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuan.atm.mapper.CardMapper">
+  <resultMap id="BaseResultMap" type="com.dayuan.atm.entity.Card">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="card_number" jdbcType="VARCHAR" property="cardNumber" />
+    <result column="card_password" jdbcType="VARCHAR" property="cardPassword" />
+    <result column="card_balance" jdbcType="INTEGER" property="cardBalance" />
+    <result column="card_status" jdbcType="INTEGER" property="cardStatus" />
+    <result column="card_create_time" jdbcType="TIMESTAMP" property="cardCreateTime" />
+    <result column="card_modify_time" jdbcType="TIMESTAMP" property="cardModifyTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, card_number, card_password, card_balance, card_status, card_create_time, 
+    card_modify_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from atm_card
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from atm_card
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dayuan.atm.entity.Card">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into atm_card (user_id, card_number, card_password, 
+      card_balance, card_status, card_create_time, 
+      card_modify_time)
+    values (#{userId,jdbcType=VARCHAR}, #{cardNumber,jdbcType=VARCHAR}, #{cardPassword,jdbcType=VARCHAR}, 
+      #{cardBalance,jdbcType=INTEGER}, #{cardStatus,jdbcType=INTEGER}, #{cardCreateTime,jdbcType=TIMESTAMP}, 
+      #{cardModifyTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dayuan.atm.entity.Card">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into atm_card
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="cardNumber != null">
+        card_number,
+      </if>
+      <if test="cardPassword != null">
+        card_password,
+      </if>
+      <if test="cardBalance != null">
+        card_balance,
+      </if>
+      <if test="cardStatus != null">
+        card_status,
+      </if>
+      <if test="cardCreateTime != null">
+        card_create_time,
+      </if>
+      <if test="cardModifyTime != null">
+        card_modify_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumber != null">
+        #{cardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cardPassword != null">
+        #{cardPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        #{cardBalance,jdbcType=INTEGER},
+      </if>
+      <if test="cardStatus != null">
+        #{cardStatus,jdbcType=INTEGER},
+      </if>
+      <if test="cardCreateTime != null">
+        #{cardCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cardModifyTime != null">
+        #{cardModifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dayuan.atm.entity.Card">
+    update atm_card
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNumber != null">
+        card_number = #{cardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cardPassword != null">
+        card_password = #{cardPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        card_balance = #{cardBalance,jdbcType=INTEGER},
+      </if>
+      <if test="cardStatus != null">
+        card_status = #{cardStatus,jdbcType=INTEGER},
+      </if>
+      <if test="cardCreateTime != null">
+        card_create_time = #{cardCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cardModifyTime != null">
+        card_modify_time = #{cardModifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dayuan.atm.entity.Card">
+    update atm_card
+    set user_id = #{userId,jdbcType=VARCHAR},
+      card_number = #{cardNumber,jdbcType=VARCHAR},
+      card_password = #{cardPassword,jdbcType=VARCHAR},
+      card_balance = #{cardBalance,jdbcType=INTEGER},
+      card_status = #{cardStatus,jdbcType=INTEGER},
+      card_create_time = #{cardCreateTime,jdbcType=TIMESTAMP},
+      card_modify_time = #{cardModifyTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="getCardbyNumber" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from atm_card
+    where card_number = #{cardNumber}
+  </select>
+  <update id="updateBalance">
+    update atm_card
+    set card_balance = #{newbalance},
+    card_modify_time = now()
+    where id = #{cardId}
+    and card_balance = #{oldbalance}
+  </update>
+  <select id="listCardByUserId" resultMap="BaseResultMap">
+    select id, card_number, card_balance
+    from atm_card
+    where user_id = #{userId}
+  </select>
+
+  <select id="getCardById4Lock" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from atm_card
+    where id = #{cardId}
+    FOR UPDATE
+  </select>
+</mapper>

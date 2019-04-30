@@ -1,0 +1,38 @@
+<configuration debug="true">
+
+    <!--STDOUT标准输出、处理appender的实现类-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are  by default assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger [%M:%L] - %msg%n</pattern>
+            <!--时间、线程名字、日志级别、包名类名、[方法、行号]、日志输出信息-->
+        </encoder>
+    </appender>
+
+    <!--<appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+        <!--&lt;!&ndash;日志存储路径，最前边的/指的当前盘符&ndash;&gt;-->
+        <!--<file>/var/log/atm/atm.log</file>-->
+        <!--&lt;!&ndash;当流有数据的时候，true追加日志，false覆盖日志&ndash;&gt;-->
+        <!--<append>true</append>-->
+        <!--&lt;!&ndash;flush流到磁盘里去&ndash;&gt;-->
+        <!--<immediateFlush>true</immediateFlush>-->
+
+        <!--<encoder>-->
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger [%M:%L] - %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <!--&lt;!&ndash;异步日志&ndash;&gt;-->
+    <!--<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">-->
+        <!--<appender-ref ref="FILE" />-->
+        <!--&lt;!&ndash;对列长度&ndash;&gt;-->
+        <!--<queueSize>512</queueSize>-->
+    <!--</appender>-->
+
+    <!--日志级别，上线日志级别设置info，设置输出源为控制台、文件等）-->
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <!--<appender-ref ref="ASYNC" />-->
+    </root>
+</configuration>

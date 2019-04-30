@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--扫描器，解决依赖，service上有标签，所以此时被实例化-->
+    <context:component-scan base-package="com.dayuan.atm">
+        <!--排除哪些不进行扫描，因为测试并发，不需要扫描controller,所以排除-->
+        <!--type：指的通过什么方式排除，annotation指的就是通过标签鉴别排除-->
+        <!--expression：需排除的标签地址-->
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"></context:exclude-filter>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+    </context:component-scan>
+
+    <!--配置文件generator纳入管理-->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+                <value>classpath:atm.properties</value>
+                <value>classpath:wxBind.properties</value>
+                <value>classpath:redis.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--XML配置我的微信登录jar-->
+<!--    <bean id="wxBindHolder" class="com.dayuan.authen.wechat.WxBindHolder" >-->
+<!--        <property name="appid" value="${wx.appid}"></property>-->
+<!--        <property name="qrconnectUrl" value="${wx.qrconnect.url}"></property>-->
+<!--        <property name="redirectUri" value="${wx.redirect.uri}"></property>-->
+<!--        <property name="accessToken" value="${wx.accessToken.url}"></property>-->
+<!--        <property name="secret" value="${wx.secret}"></property>-->
+<!--        <property name="userInfoUrl" value="${wx.userInfo.url}"></property>-->
+<!--    </bean>-->
+
+    <!--数据库连接-->
+    <!--数据源：dbcp-->
+    <!--<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">-->
+        <!--<property name="username" value="${username}"></property>-->
+        <!--<property name="password" value="${password}"></property>-->
+        <!--<property name="url" value="${url}"></property>-->
+        <!--<property name="driverClassName" value="${driver}"></property>-->
+        <!--&lt;!&ndash;配置数据源最大连接数量&ndash;&gt;-->
+        <!--<property name="maxTotal" value="8"></property>-->
+        <!--&lt;!&ndash;配置数据源等待连接时间，防止连接不归还，死锁&ndash;&gt;-->
+        <!--<property name="maxWaitMillis" value="30000"></property>-->
+        <!--&lt;!&ndash; 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 &ndash;&gt;-->
+        <!--<property name="timeBetweenEvictionRunsMillis" value="60000" />-->
+        <!--&lt;!&ndash;检测时候用到的语句，随便写一条即可&ndash;&gt;-->
+        <!--<property name="validationQuery" value="SELECT 1" />-->
+    <!--</bean>-->
+
+    <!--数据源：druid德鲁伊-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="username" value="${username}"></property>
+        <property name="password" value="${password}"></property>
+        <property name="url" value="${url}"></property>
+        <property name="driverClassName" value="${driver}"></property>
+        <!--配置数据源最大连接数量-->
+        <property name="maxActive" value="8"></property>
+        <!--配置数据源等待连接时间，防止连接不归还，死锁-->
+        <property name="maxWait" value="30000"></property>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <!--检测时候用到的语句，随便写一条即可-->
+        <property name="validationQuery" value="SELECT 1" />
+    </bean>
+
+    <!--Mybatis核心-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath*:mybatis/*.xml" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dayuan.atm.mapper" />
+    </bean>
+
+    <!--事务bean-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--事务驱动-->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+</beans>
